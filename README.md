@@ -1,6 +1,13 @@
-# moon - Setup toolchain
+# moon - Setup moon and toolchain
 
-???
+A GitHub action that sets up an environment for moon by...
+
+Installing the `moon` binary globally using the
+[official installation script](https://moonrepo.dev/docs/install), and appending the installation
+directory to `PATH`.
+
+And also caching the moon toolchain at `~/.moon`, keyed by hashing the `.moon/toolchain.yml`
+configuration file found in the repository.
 
 ## Installation
 
