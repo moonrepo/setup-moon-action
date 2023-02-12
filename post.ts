@@ -1,6 +1,6 @@
 import * as cache from '@actions/cache';
 import * as core from '@actions/core';
-import { getMoonHome, getToolchainCacheKey } from './helpers';
+import { getMoonToolsDir, getToolchainCacheKey } from './helpers';
 
 async function run() {
 	if (!cache.isFeatureAvailable()) {
@@ -8,7 +8,15 @@ async function run() {
 	}
 
 	try {
-		await cache.saveCache([getMoonHome()], await getToolchainCacheKey(), {}, false);
+		const primaryKey = await getToolchainCacheKey();
+		const cacheKey = core.getState('cacheKey');
+
+		if (cacheKey === primaryKey) {
+			core.info(`Cache hit occured on the primary key ${primaryKey}, not saving cache`);
+			return;
+		}
+
+		await cache.saveCache([getMoonToolsDir()], cacheKey, {}, false);
 	} catch (error: unknown) {
 		core.setFailed((error as Error).message);
 	}

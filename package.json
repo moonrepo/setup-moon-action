@@ -4,7 +4,7 @@
   "description": "A GitHub action for installing moon globally and caching the toolchain.",
   "main": "dist/index.js",
   "scripts": {
-    "build": "ncc build ./index.ts",
+    "build": "ncc build ./index.ts && ncc build ./post.ts --out ./dist/post",
     "check": "npm run lint && npm run test && npm run typecheck",
     "deps": "npx npm-check-updates --interactive",
     "lint": "eslint --ext .ts,.js --fix .",

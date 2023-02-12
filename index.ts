@@ -3,7 +3,7 @@ import execa from 'execa';
 import * as cache from '@actions/cache';
 import * as core from '@actions/core';
 import * as tc from '@actions/tool-cache';
-import { getMoonHome, getToolchainCacheKey } from './helpers';
+import { getMoonToolsDir, getToolchainCacheKey } from './helpers';
 
 async function installMoon() {
 	core.debug('Installing `moon` globally');
@@ -11,8 +11,8 @@ async function installMoon() {
 	const version = core.getInput('version') || 'latest';
 	const installScript = await tc.downloadTool('https://moonrepo.dev/install.sh');
 	const binPath = path.join(
-		getMoonHome(),
-		'tools/moon',
+		getMoonToolsDir(),
+		'moon',
 		version,
 		process.platform === 'win32' ? 'moon.exe' : 'moon',
 	);
@@ -36,17 +36,24 @@ async function restoreCache() {
 		return;
 	}
 
-	const cacheKey = await getToolchainCacheKey();
-	const hit = await cache.restoreCache([getMoonHome()], cacheKey, [], {}, false);
+	const primaryKey = await getToolchainCacheKey();
+	const cacheKey = await cache.restoreCache(
+		[getMoonToolsDir()],
+		primaryKey,
+		[`moon-toolchain-${process.platform}`, 'moon-toolchain'],
+		{},
+		false,
+	);
 
-	if (hit) {
-		core.debug(`Toolchain cache restore using key ${cacheKey}`);
+	if (cacheKey) {
+		core.saveState('cacheKey', cacheKey);
+		core.debug(`Toolchain cache restored using key ${primaryKey}`);
 	} else {
-		core.warning(`Failed to restore toolchain cache using key ${cacheKey}`);
+		core.warning(`Failed to restore toolchain cache using key ${primaryKey}`);
 	}
 
-	core.setOutput('cache-key', hit ?? cacheKey);
-	core.setOutput('cache-hit', !!hit);
+	core.setOutput('cache-key', cacheKey ?? primaryKey);
+	core.setOutput('cache-hit', !!cacheKey);
 }
 
 async function run() {
