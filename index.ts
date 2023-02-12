@@ -1,3 +1,4 @@
+import fs from 'fs';
 import path from 'path';
 import execa from 'execa';
 import * as cache from '@actions/cache';
@@ -5,24 +6,29 @@ import * as core from '@actions/core';
 import * as tc from '@actions/tool-cache';
 import { getMoonToolsDir, getToolchainCacheKey } from './helpers';
 
+const WINDOWS = process.platform === 'win32';
+
 async function installMoon() {
 	core.debug('Installing `moon` globally');
 
 	const version = core.getInput('version') || 'latest';
-	const installScript = await tc.downloadTool('https://moonrepo.dev/install.sh');
-	const binPath = path.join(
-		getMoonToolsDir(),
-		'moon',
-		version,
-		process.platform === 'win32' ? 'moon.exe' : 'moon',
-	);
+	const binPath = path.join(getMoonToolsDir(), 'moon', version, WINDOWS ? 'moon.exe' : 'moon');
 
-	core.debug(`Downloaded installation script to ${installScript}`);
+	if (version !== 'latest' && fs.existsSync(binPath)) {
+		core.debug('Binary already exists, skipping installation');
+		return;
+	}
 
-	await execa(
-		'bash',
-		['-c', installScript, version === 'latest' ? undefined : version].filter(Boolean) as string[],
-	);
+	const script = await tc.downloadTool(`https://moonrepo.dev/install.${WINDOWS ? 'ps1' : 'sh'}`);
+	const args = [script];
+
+	if (version !== 'latest') {
+		args.push(version);
+	}
+
+	core.debug(`Downloaded installation script to ${script}`);
+
+	await (WINDOWS ? execa('pwsh.exe', ['-Command', ...args]) : execa('bash', ['-c', ...args]));
 
 	core.debug(`Installed binary to ${binPath}`);
 
@@ -36,6 +42,8 @@ async function restoreCache() {
 		return;
 	}
 
+	core.debug('Attempting to restore cached toolchain');
+
 	const primaryKey = await getToolchainCacheKey();
 	const cacheKey = await cache.restoreCache(
 		[getMoonToolsDir()],
@@ -46,10 +54,10 @@ async function restoreCache() {
 	);
 
 	if (cacheKey) {
-		core.saveState('cacheKey', cacheKey);
+		core.saveState('cacheHitKey', cacheKey);
 		core.debug(`Toolchain cache restored using key ${primaryKey}`);
 	} else {
-		core.warning(`Failed to restore toolchain cache using key ${primaryKey}`);
+		core.warning(`Toolchain cache does not exist using key ${primaryKey}`);
 	}
 
 	core.setOutput('cache-key', cacheKey ?? primaryKey);

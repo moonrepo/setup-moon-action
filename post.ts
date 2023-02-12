@@ -9,14 +9,14 @@ async function run() {
 
 	try {
 		const primaryKey = await getToolchainCacheKey();
-		const cacheKey = core.getState('cacheKey');
+		const cacheHitKey = core.getState('cacheHitKey');
 
-		if (cacheKey === primaryKey) {
-			core.info(`Cache hit occured on the primary key ${primaryKey}, not saving cache`);
+		if (cacheHitKey === primaryKey) {
+			core.info(`Cache hit occured on the primary key ${cacheHitKey}, not saving cache`);
 			return;
 		}
 
-		await cache.saveCache([getMoonToolsDir()], cacheKey, {}, false);
+		await cache.saveCache([getMoonToolsDir()], primaryKey, {}, false);
 	} catch (error: unknown) {
 		core.setFailed((error as Error).message);
 	}
