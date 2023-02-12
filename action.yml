@@ -1,0 +1,14 @@
+name: 'moon - Setup toolchain'
+author: 'Miles Johnson'
+description: 'Installs moon and caches the toolchain.'
+inputs:
+  version:
+    default: 'latest'
+    description: 'Version of moon to install'
+    required: false
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
+branding:
+  icon: 'moon'
+  color: 'purple'
