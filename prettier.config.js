@@ -1,1 +1,1 @@
-module.exports = "prettier-config-moon";
+module.exports = 'prettier-config-moon';

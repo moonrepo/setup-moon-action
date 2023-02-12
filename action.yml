@@ -6,9 +6,15 @@ inputs:
     default: 'latest'
     description: 'Version of moon to install'
     required: false
+outputs:
+  cache-key:
+    description: 'The cache key used for the toolchain folder (~/.moon).'
+  cache-hit:
+    description: 'A boolean to indicate an exact match was found for the cache key.'
 runs:
   using: 'node16'
   main: 'dist/index.js'
+  post: 'dist/post.js'
 branding:
   icon: 'moon'
   color: 'purple'
