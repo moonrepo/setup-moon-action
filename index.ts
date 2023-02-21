@@ -4,7 +4,7 @@ import execa from 'execa';
 import * as cache from '@actions/cache';
 import * as core from '@actions/core';
 import * as tc from '@actions/tool-cache';
-import { getMoonToolsDir, getToolchainCacheKey } from './helpers';
+import { getMoonHomeDir, getMoonToolsDir, getToolchainCacheKey } from './helpers';
 
 const WINDOWS = process.platform === 'win32';
 
@@ -12,6 +12,7 @@ async function installMoon() {
 	core.info('Installing `moon` globally');
 
 	const version = core.getInput('version') || 'latest';
+	const tempPath = path.join(getMoonHomeDir(), 'temp', WINDOWS ? 'install.ps1' : 'install.sh');
 	const binDir = path.join(getMoonToolsDir(), 'moon', version);
 	const binPath = path.join(binDir, WINDOWS ? 'moon.exe' : 'moon');
 
@@ -20,7 +21,7 @@ async function installMoon() {
 		return;
 	}
 
-	const script = await tc.downloadTool(`https://moonrepo.dev/install.${WINDOWS ? 'ps1' : 'sh'}`);
+	const script = await tc.downloadTool(`https://moonrepo.dev/${path.basename(tempPath)}`, tempPath);
 	const args = [];
 
 	if (version !== 'latest') {
