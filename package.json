@@ -1,6 +1,6 @@
 {
   "name": "@moonrepo/setup-moon-action",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "A GitHub action for installing moon globally and caching the toolchain.",
   "main": "dist/index.js",
   "scripts": {

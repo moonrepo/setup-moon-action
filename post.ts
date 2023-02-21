@@ -12,9 +12,11 @@ async function run() {
 		const cacheHitKey = core.getState('cacheHitKey');
 
 		if (cacheHitKey === primaryKey) {
-			core.info(`Cache hit occured on the primary key ${cacheHitKey}, not saving cache`);
+			core.info(`Cache hit occured on the key ${cacheHitKey}, not saving cache`);
 			return;
 		}
+
+		core.info(`Saving cache with key ${primaryKey}`);
 
 		await cache.saveCache([getMoonToolsDir()], primaryKey, {}, false);
 	} catch (error: unknown) {
