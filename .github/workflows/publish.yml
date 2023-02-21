@@ -10,8 +10,6 @@ jobs:
         with:
           ref: ${{ github.event.release.tag_name }}
       - uses: actions/setup-node@v3
-        with:
-          cache: pnpm
       - run: pnpm install
       - run: pnpm run build
       - uses: aboutte/build-and-tag-action@v2
