@@ -11,9 +11,9 @@ jobs:
           ref: ${{ github.event.release.tag_name }}
       - uses: actions/setup-node@v3
         with:
-          cache: npm
-      - run: npm ci
-      - run: npm run build
+          cache: pnpm
+      - run: pnpm install
+      - run: pnpm run build
       - uses: JasonEtco/build-and-tag-action@v2
         env:
           GITHUB_TOKEN: ${{ github.token }}

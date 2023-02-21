@@ -5,8 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "ncc build ./index.ts && ncc build ./post.ts --out ./dist/post",
-    "check": "npm run lint && npm run test && npm run typecheck",
-    "deps": "npx npm-check-updates --interactive",
+    "check": "pnpm run lint && pnpm run test && pnpm run typecheck",
+    "deps": "pnpm update --latest --interactive",
     "lint": "eslint --ext .ts,.js --fix .",
     "test": "echo 'Not yet'",
     "test:input": "ts-node ./index.ts",

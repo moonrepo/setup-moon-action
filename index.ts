@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 import execa from 'execa';
 import * as cache from '@actions/cache';
 import * as core from '@actions/core';
@@ -76,4 +76,5 @@ async function run() {
 	}
 }
 
+// eslint-disable-next-line unicorn/prefer-top-level-await
 void run();
