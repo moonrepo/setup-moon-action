@@ -12,7 +12,8 @@ async function installMoon() {
 	core.info('Installing `moon` globally');
 
 	const version = core.getInput('version') || 'latest';
-	const binPath = path.join(getMoonToolsDir(), 'moon', version, WINDOWS ? 'moon.exe' : 'moon');
+	const binDir = path.join(getMoonToolsDir(), 'moon', version);
+	const binPath = path.join(binDir, WINDOWS ? 'moon.exe' : 'moon');
 
 	if (version !== 'latest' && fs.existsSync(binPath)) {
 		core.info('Binary already exists, skipping installation');
@@ -20,7 +21,7 @@ async function installMoon() {
 	}
 
 	const script = await tc.downloadTool(`https://moonrepo.dev/install.${WINDOWS ? 'ps1' : 'sh'}`);
-	const args = [script];
+	const args = [];
 
 	if (version !== 'latest') {
 		args.push(version);
@@ -31,11 +32,16 @@ async function installMoon() {
 	// eslint-disable-next-line no-magic-numbers
 	await fs.promises.chmod(script, 0o755);
 
-	await (WINDOWS ? execa('pwsh.exe', ['-Command', ...args]) : execa('bash', ['-c', ...args]));
+	await execa(script, args);
+
+	// Make it available without exe extension
+	if (WINDOWS) {
+		await fs.promises.copyFile(binPath, path.join(binDir, 'moon'));
+	}
 
 	core.info(`Installed binary to ${binPath}`);
 
-	core.addPath(path.dirname(binPath));
+	core.addPath(binDir);
 
 	core.info(`Added installation direction to PATH`);
 }

@@ -1,9 +1,15 @@
+import fs from 'node:fs';
 import * as cache from '@actions/cache';
 import * as core from '@actions/core';
 import { getMoonToolsDir, getToolchainCacheKey } from './helpers';
 
 async function run() {
 	if (!cache.isFeatureAvailable()) {
+		return;
+	}
+
+	if (!fs.existsSync(getMoonToolsDir())) {
+		core.warning(`Toolchain does not exist at ~/.moon, not saving cache`);
 		return;
 	}
 
