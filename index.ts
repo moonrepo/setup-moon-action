@@ -4,7 +4,7 @@ import execa from 'execa';
 import * as cache from '@actions/cache';
 import * as core from '@actions/core';
 import * as tc from '@actions/tool-cache';
-import { getMoonHomeDir, getMoonToolsDir, getToolchainCacheKey } from './helpers';
+import { getHomeDir, getToolchainCacheKey, getToolsDir } from './helpers';
 
 const WINDOWS = process.platform === 'win32';
 
@@ -12,21 +12,19 @@ async function installMoon() {
 	core.info('Installing `moon` globally');
 
 	const version = core.getInput('version') || 'latest';
-	const tempPath = path.join(getMoonHomeDir(), 'temp', WINDOWS ? 'install.ps1' : 'install.sh');
-	const binDir = path.join(getMoonToolsDir(), 'moon', version);
+	const tempPath = path.join(getHomeDir(), 'temp', WINDOWS ? 'install.ps1' : 'install.sh');
+	const binDir = path.join(getToolsDir(), 'moon', version);
 	const binPath = path.join(binDir, WINDOWS ? 'moon.exe' : 'moon');
 
 	if (version !== 'latest' && fs.existsSync(binPath)) {
+		core.addPath(binDir);
 		core.info('Binary already exists, skipping installation');
+
 		return;
 	}
 
 	const script = await tc.downloadTool(`https://moonrepo.dev/${path.basename(tempPath)}`, tempPath);
-	const args = [];
-
-	if (version !== 'latest') {
-		args.push(version);
-	}
+	const args = version === 'latest' ? [] : [version];
 
 	core.info(`Downloaded installation script to ${script}`);
 
@@ -56,7 +54,7 @@ async function restoreCache() {
 
 	const primaryKey = await getToolchainCacheKey();
 	const cacheKey = await cache.restoreCache(
-		[getMoonToolsDir()],
+		[getToolsDir()],
 		primaryKey,
 		[`moon-toolchain-${process.platform}`, 'moon-toolchain'],
 		{},

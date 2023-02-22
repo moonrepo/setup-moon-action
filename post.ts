@@ -1,15 +1,15 @@
 import fs from 'node:fs';
 import * as cache from '@actions/cache';
 import * as core from '@actions/core';
-import { getMoonToolsDir, getToolchainCacheKey } from './helpers';
+import { getToolchainCacheKey, getToolsDir } from './helpers';
 
 async function run() {
 	if (!cache.isFeatureAvailable()) {
 		return;
 	}
 
-	if (!fs.existsSync(getMoonToolsDir())) {
-		core.warning(`Toolchain does not exist at ~/.moon, not saving cache`);
+	if (!fs.existsSync(getToolsDir())) {
+		core.warning(`Toolchain does not exist, not saving cache`);
 		return;
 	}
 
@@ -24,7 +24,7 @@ async function run() {
 
 		core.info(`Saving cache with key ${primaryKey}`);
 
-		await cache.saveCache([getMoonToolsDir()], primaryKey, {}, false);
+		await cache.saveCache([getToolsDir()], primaryKey, {}, false);
 	} catch (error: unknown) {
 		core.setFailed((error as Error).message);
 	}

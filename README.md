@@ -6,8 +6,8 @@ Installing the `moon` binary globally using the
 [official installation script](https://moonrepo.dev/docs/install), and appending the installation
 directory to `PATH`.
 
-And also caching the moon toolchain at `~/.moon`, keyed by hashing the `.moon/toolchain.yml`
-configuration file found in the repository.
+And also caching the moon toolchain at `~/.moon` (or `~/.proto`), keyed by hashing the
+`.moon/toolchain.yml` configuration file found in the repository.
 
 ## Installation
 

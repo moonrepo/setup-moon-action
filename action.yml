@@ -1,6 +1,6 @@
 name: 'moon - Setup moon and toolchain'
 author: 'Miles Johnson'
-description: 'Installs moon and caches the toolchain.'
+description: 'Installs moon globally and caches the toolchain.'
 inputs:
   version:
     default: 'latest'
