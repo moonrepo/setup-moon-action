@@ -18,6 +18,9 @@ jobs:
     name: CI
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - uses: moonrepo/setup-moon-action@v1
       - run: moon ci
 ```
