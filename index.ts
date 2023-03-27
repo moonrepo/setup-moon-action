@@ -23,7 +23,12 @@ async function installMoon() {
 		return;
 	}
 
-	const script = await tc.downloadTool(`https://moonrepo.dev/${path.basename(tempPath)}`, tempPath);
+	const script = await tc.downloadTool(
+		version === 'latest' || !version.startsWith('0')
+			? `https://moonrepo.dev/install/${WINDOWS ? 'moon.ps1' : 'moon.sh'}`
+			: `https://moonrepo.dev/${path.basename(tempPath)}`,
+		tempPath,
+	);
 	const args = version === 'latest' ? [] : [version];
 
 	core.info(`Downloaded installation script to ${script}`);
