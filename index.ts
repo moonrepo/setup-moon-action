@@ -4,17 +4,20 @@ import execa from 'execa';
 import * as cache from '@actions/cache';
 import * as core from '@actions/core';
 import * as tc from '@actions/tool-cache';
-import { getHomeDir, getToolchainCacheKey, getToolsDir } from './helpers';
+import { getHomeDir, getMoonDir, getToolchainCacheKey, getToolsDir } from './helpers';
 
 const WINDOWS = process.platform === 'win32';
 
+// eslint-disable-next-line complexity
 async function installMoon() {
 	core.info('Installing `moon` globally');
 
 	const version = core.getInput('version') || 'latest';
-	const tempPath = path.join(getHomeDir(), 'temp', WINDOWS ? 'install.ps1' : 'install.sh');
-	const binDir = path.join(getToolsDir(), 'moon', version);
-	const binPath = path.join(binDir, WINDOWS ? 'moon.exe' : 'moon');
+	const isV1 = version === 'latest' || !version.startsWith('0');
+
+	const binName = WINDOWS ? 'moon.exe' : 'moon';
+	const binDir = isV1 ? path.join(getMoonDir(), 'bin') : path.join(getToolsDir(), 'moon', version);
+	const binPath = path.join(binDir, binName);
 
 	if (version !== 'latest' && fs.existsSync(binPath)) {
 		core.addPath(binDir);
@@ -23,11 +26,12 @@ async function installMoon() {
 		return;
 	}
 
+	const scriptName = WINDOWS ? 'install.ps1' : 'install.sh';
 	const script = await tc.downloadTool(
-		version === 'latest' || !version.startsWith('0')
+		isV1
 			? `https://moonrepo.dev/install/${WINDOWS ? 'moon.ps1' : 'moon.sh'}`
-			: `https://moonrepo.dev/${path.basename(tempPath)}`,
-		tempPath,
+			: `https://moonrepo.dev/${scriptName}`,
+		path.join(getHomeDir(), 'temp', scriptName),
 	);
 	const args = version === 'latest' ? [] : [version];
 

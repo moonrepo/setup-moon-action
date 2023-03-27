@@ -3,6 +3,10 @@ import os from 'node:os';
 import path from 'node:path';
 import * as glob from '@actions/glob';
 
+export function getMoonDir() {
+	return path.join(os.homedir(), '.moon');
+}
+
 export function getHomeDir() {
 	const proto = path.join(os.homedir(), '.proto');
 
@@ -10,7 +14,7 @@ export function getHomeDir() {
 		return proto;
 	}
 
-	return path.join(os.homedir(), '.moon');
+	return getMoonDir();
 }
 
 export function getToolsDir() {
