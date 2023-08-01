@@ -4,7 +4,7 @@ description: 'Installs moon globally and caches the toolchain.'
 inputs:
   version:
     default: 'latest'
-    description: 'Version of moon to install'
+    description: 'Version of moon to install.'
     required: false
 outputs:
   cache-key:
