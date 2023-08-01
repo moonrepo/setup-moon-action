@@ -1,4 +1,3 @@
-import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import * as glob from '@actions/glob';
@@ -8,13 +7,7 @@ export function getMoonDir() {
 }
 
 export function getHomeDir() {
-	const proto = path.join(os.homedir(), '.proto');
-
-	if (fs.existsSync(proto)) {
-		return proto;
-	}
-
-	return getMoonDir();
+	return path.join(os.homedir(), '.proto');
 }
 
 export function getToolsDir() {

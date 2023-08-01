@@ -74,7 +74,7 @@ async function restoreCache() {
 		core.saveState('cacheHitKey', cacheKey);
 		core.info(`Toolchain cache restored using key ${primaryKey}`);
 	} else {
-		core.warning(`Toolchain cache does not exist using key ${primaryKey}`);
+		core.info(`Toolchain cache does not exist using key ${primaryKey}`);
 	}
 
 	core.setOutput('cache-key', cacheKey ?? primaryKey);

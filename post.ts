@@ -9,7 +9,7 @@ async function run() {
 	}
 
 	if (!fs.existsSync(getToolsDir())) {
-		core.warning(`Toolchain does not exist, not saving cache`);
+		core.info(`Toolchain does not exist, not saving cache`);
 		return;
 	}
 
