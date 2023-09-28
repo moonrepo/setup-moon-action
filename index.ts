@@ -4,13 +4,7 @@ import execa from 'execa';
 import * as cache from '@actions/cache';
 import * as core from '@actions/core';
 import * as tc from '@actions/tool-cache';
-import {
-	getMoonDir,
-	getPluginsDir,
-	getProtoDir,
-	getToolchainCacheKey,
-	getToolsDir,
-} from './helpers';
+import { getHomeDir, getMoonDir, getToolchainCacheKey, getToolsDir } from './helpers';
 
 const WINDOWS = process.platform === 'win32';
 
@@ -21,16 +15,12 @@ async function installMoon() {
 	const version = core.getInput('version') || 'latest';
 	const isV1 = version === 'latest' || !version.startsWith('0');
 
-	const protoDir = getProtoDir();
-	const protoBinDir = path.join(protoDir, 'bin');
-
 	const binName = WINDOWS ? 'moon.exe' : 'moon';
-	const binDir = isV1 ? path.join(getMoonDir(), 'bin') : path.join(protoDir, 'tools/moon', version);
+	const binDir = isV1 ? path.join(getMoonDir(), 'bin') : path.join(getToolsDir(), 'moon', version);
 	const binPath = path.join(binDir, binName);
 
 	if (version !== 'latest' && fs.existsSync(binPath)) {
 		core.addPath(binDir);
-		core.addPath(protoBinDir);
 		core.info('Binary already exists, skipping installation');
 
 		return;
@@ -41,7 +31,7 @@ async function installMoon() {
 		isV1
 			? `https://moonrepo.dev/install/${WINDOWS ? 'moon.ps1' : 'moon.sh'}`
 			: `https://moonrepo.dev/${scriptName}`,
-		path.join(protoDir, 'temp', scriptName),
+		path.join(getHomeDir(), 'temp', scriptName),
 	);
 	const args = version === 'latest' ? [] : [version];
 
@@ -60,9 +50,8 @@ async function installMoon() {
 	core.info(`Installed binary to ${binPath}`);
 
 	core.addPath(binDir);
-	core.addPath(protoBinDir);
 
-	core.info(`Added installation directory to PATH`);
+	core.info(`Added installation direction to PATH`);
 }
 
 async function restoreCache() {
@@ -74,7 +63,7 @@ async function restoreCache() {
 
 	const primaryKey = await getToolchainCacheKey();
 	const cacheKey = await cache.restoreCache(
-		[getPluginsDir(), getToolsDir()],
+		[getToolsDir()],
 		primaryKey,
 		[`moon-toolchain-${process.platform}`, 'moon-toolchain'],
 		{},
