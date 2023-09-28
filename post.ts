@@ -1,14 +1,17 @@
 import fs from 'node:fs';
 import * as cache from '@actions/cache';
 import * as core from '@actions/core';
-import { getToolchainCacheKey, getToolsDir } from './helpers';
+import { getPluginsDir, getToolchainCacheKey, getToolsDir } from './helpers';
 
 async function run() {
 	if (!cache.isFeatureAvailable()) {
 		return;
 	}
 
-	if (!fs.existsSync(getToolsDir())) {
+	const pluginsDir = getPluginsDir();
+	const toolsDir = getToolsDir();
+
+	if (!fs.existsSync(toolsDir)) {
 		core.info(`Toolchain does not exist, not saving cache`);
 		return;
 	}
@@ -24,7 +27,7 @@ async function run() {
 
 		core.info(`Saving cache with key ${primaryKey}`);
 
-		await cache.saveCache([getToolsDir()], primaryKey, {}, false);
+		await cache.saveCache([pluginsDir, toolsDir], primaryKey, {}, false);
 	} catch (error: unknown) {
 		core.setFailed((error as Error).message);
 	}
