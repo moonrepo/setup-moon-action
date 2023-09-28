@@ -1,3 +1,13 @@
+# 1.4.0
+
+- Re-enabled the v1.3 release.
+- Will now also install `proto` globally.
+- Includes `.prototools` when hashing the cache key.
+
+# 1.3.1
+
+- Reverted previous release as it broke CI.
+
 # 1.3.0
 
 - Will now append `~/.proto/bin` to `PATH`, to make the moon toolchain available.

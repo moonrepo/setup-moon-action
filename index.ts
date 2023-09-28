@@ -4,45 +4,35 @@ import execa from 'execa';
 import * as cache from '@actions/cache';
 import * as core from '@actions/core';
 import * as tc from '@actions/tool-cache';
-import {
-	getMoonDir,
-	getPluginsDir,
-	getProtoDir,
-	getToolchainCacheKey,
-	getToolsDir,
-} from './helpers';
+import { getPluginsDir, getProtoDir, getToolchainCacheKey, getToolsDir } from './helpers';
 
 const WINDOWS = process.platform === 'win32';
 
-// eslint-disable-next-line complexity
-async function installMoon() {
-	core.info('Installing `moon` globally');
+async function installBin(bin: string, versionInput: string) {
+	core.info(`Installing \`${bin}\` globally`);
 
-	const version = core.getInput('version') || 'latest';
-	const isV1 = version === 'latest' || !version.startsWith('0');
+	const version = core.getInput(versionInput) || 'latest';
 
-	const protoDir = getProtoDir();
-	const protoBinDir = path.join(protoDir, 'bin');
-
-	const binName = WINDOWS ? 'moon.exe' : 'moon';
-	const binDir = isV1 ? path.join(getMoonDir(), 'bin') : path.join(protoDir, 'tools/moon', version);
-	const binPath = path.join(binDir, binName);
+	const binFile = WINDOWS ? `${bin}.exe` : bin;
+	const binDir = path.join(getProtoDir(), 'bin');
+	const binPath = path.join(binDir, binFile);
 
 	if (version !== 'latest' && fs.existsSync(binPath)) {
 		core.addPath(binDir);
-		core.addPath(protoBinDir);
 		core.info('Binary already exists, skipping installation');
 
 		return;
 	}
 
-	const scriptName = WINDOWS ? 'install.ps1' : 'install.sh';
-	const script = await tc.downloadTool(
-		isV1
-			? `https://moonrepo.dev/install/${WINDOWS ? 'moon.ps1' : 'moon.sh'}`
-			: `https://moonrepo.dev/${scriptName}`,
-		path.join(protoDir, 'temp', scriptName),
-	);
+	const scriptName = WINDOWS ? `${bin}.ps1` : `${bin}.sh`;
+	const scriptPath = path.join(getProtoDir(), 'temp', scriptName);
+
+	// If the installer already exists, delete it and ensure were using the latest
+	if (fs.existsSync(scriptPath)) {
+		fs.unlinkSync(scriptPath);
+	}
+
+	const script = await tc.downloadTool(`https://moonrepo.dev/install/${scriptName}`, scriptPath);
 	const args = version === 'latest' ? [] : [version];
 
 	core.info(`Downloaded installation script to ${script}`);
@@ -54,15 +44,14 @@ async function installMoon() {
 
 	// Make it available without exe extension
 	if (WINDOWS) {
-		await fs.promises.copyFile(binPath, path.join(binDir, 'moon'));
+		await fs.promises.copyFile(binPath, path.join(binDir, bin));
 	}
 
 	core.info(`Installed binary to ${binPath}`);
 
 	core.addPath(binDir);
-	core.addPath(protoBinDir);
 
-	core.info(`Added installation directory to PATH`);
+	core.info(`Added directory ${binDir} to PATH`);
 }
 
 async function restoreCache() {
@@ -95,7 +84,8 @@ async function restoreCache() {
 async function run() {
 	try {
 		await restoreCache();
-		await installMoon();
+		await installBin('proto', 'proto-version');
+		await installBin('moon', 'version');
 	} catch (error: unknown) {
 		core.setFailed((error as Error).message);
 	}

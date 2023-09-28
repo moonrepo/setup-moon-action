@@ -6,6 +6,10 @@ inputs:
     default: 'latest'
     description: 'Version of moon to install.'
     required: false
+  proto-version:
+    default: 'latest'
+    description: 'Version of proto to install.'
+    required: false
 outputs:
   cache-key:
     description: 'The cache key used for the toolchain folder (~/.moon).'

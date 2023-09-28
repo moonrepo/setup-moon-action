@@ -2,14 +2,6 @@ import os from 'node:os';
 import path from 'node:path';
 import * as glob from '@actions/glob';
 
-export function getMoonDir() {
-	if (process.env.MOON_HOME) {
-		return process.env.MOON_HOME;
-	}
-
-	return path.join(os.homedir(), '.moon');
-}
-
 export function getProtoDir() {
 	if (process.env.PROTO_HOME) {
 		return process.env.PROTO_HOME;
@@ -27,7 +19,7 @@ export function getToolsDir() {
 }
 
 export async function getToolchainCacheKey() {
-	const toolchainHash = await glob.hashFiles('.moon/toolchain.yml');
+	const toolchainHash = await glob.hashFiles('.moon/toolchain.yml\n.prototools');
 
 	return `moon-toolchain-${process.platform}-${toolchainHash}`;
 }
