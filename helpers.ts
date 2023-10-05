@@ -2,6 +2,10 @@ import os from 'node:os';
 import path from 'node:path';
 import * as glob from '@actions/glob';
 
+export function getMoonDir() {
+	return path.join(os.homedir(), '.moon');
+}
+
 export function getProtoDir() {
 	if (process.env.PROTO_HOME) {
 		return process.env.PROTO_HOME;

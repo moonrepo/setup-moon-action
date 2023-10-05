@@ -4,7 +4,13 @@ import execa from 'execa';
 import * as cache from '@actions/cache';
 import * as core from '@actions/core';
 import * as tc from '@actions/tool-cache';
-import { getPluginsDir, getProtoDir, getToolchainCacheKey, getToolsDir } from './helpers';
+import {
+	getMoonDir,
+	getPluginsDir,
+	getProtoDir,
+	getToolchainCacheKey,
+	getToolsDir,
+} from './helpers';
 
 const WINDOWS = process.platform === 'win32';
 
@@ -14,7 +20,7 @@ async function installBin(bin: string, versionInput: string) {
 	const version = core.getInput(versionInput) || 'latest';
 
 	const binFile = WINDOWS ? `${bin}.exe` : bin;
-	const binDir = path.join(getProtoDir(), 'bin');
+	const binDir = bin === 'moon' ? path.join(getMoonDir(), 'bin') : path.join(getProtoDir(), 'bin');
 	const binPath = path.join(binDir, binFile);
 
 	if (version !== 'latest' && fs.existsSync(binPath)) {

@@ -1,3 +1,7 @@
+# 1.4.1
+
+- Fixed invalid moon `PATH`.
+
 # 1.4.0
 
 - Re-enabled the v1.3 release.
