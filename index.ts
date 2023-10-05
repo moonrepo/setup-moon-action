@@ -88,6 +88,10 @@ async function restoreCache() {
 }
 
 async function run() {
+	core.warning(
+		'This action is deprecated and will be removed in a future release. Please use https://github.com/moonrepo/setup-toolchain instead.',
+	);
+
 	try {
 		await restoreCache();
 		await installBin('proto', 'proto-version');
