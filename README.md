@@ -1,3 +1,5 @@
+# DEPRECATED: Use https://github.com/moonrepo/setup-toolchain instead!
+
 # moon - Setup moon and toolchain
 
 A GitHub action that sets up an environment for moon by...
